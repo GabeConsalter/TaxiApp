@@ -43,7 +43,7 @@ export default class App extends Component {
     return (
       <>
         <View style={styles.container}>
-          <Text style={styles.title}>TaxiApp</Text>
+          <Text style={styles.title}>ChatApp</Text>
   
           <FlatList
             style={styles.list}
