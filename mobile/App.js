@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import io from 'socket.io-client';
+import moment from 'moment';
 
 let socket;
 
@@ -31,7 +32,37 @@ export default function App() {
       paddingVertical: 4,
       fontWeight: 'bold',
       color: '#FFF',
-      borderRadius: 7
+      borderRadius: 7,
+    },
+
+    sendedMessage: {
+      width: '80%',
+      backgroundColor: '#EFEFEF',
+      alignSelf: 'flex-end',
+      borderRadius: 7,
+      padding: 16,
+      marginBottom: 8
+    },
+
+    receivedMessage: {
+      width: '80%',
+      backgroundColor: '#ABABAB',
+      borderRadius: 7,
+      padding: 16,
+      marginBottom: 8
+    },
+
+    list: {
+      flex: 1,
+      width: '100%',
+      marginBottom: 64 + 8,
+      marginTop: 16
+    },
+
+    date: {
+      fontSize: 12,
+      color: '#909090',
+      alignSelf: 'flex-end'
     }
   });
 
@@ -43,10 +74,10 @@ export default function App() {
     const newMessage = {
       text: message,
       sended: true,
-      date: new Date()
+      date: moment()
     };
 
-    messages.push(newMessage);
+    setMessages([...messages, newMessage]);
 
     socket.emit('newMessage', newMessage.text);
 
@@ -57,6 +88,18 @@ export default function App() {
     <>
       <View style={styles.container}>
         <Text style={styles.title}>TaxiApp</Text>
+
+        <FlatList
+          style={styles.list}
+          data={messages}
+          renderItem={({ item }) => (
+            <View style={styles.sendedMessage}>
+              <Text style={styles.text}>{item.text}</Text>
+              <Text style={styles.date}>{moment(item.date).fromNow()}</Text>
+            </View>
+          )}
+        />
+
         <TextInput
           style={styles.textInput}
           placeholder="Send a message"
