@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import io from 'socket.io-client';
 
+let socket;
+
 export default function App() {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
   const styles = StyleSheet.create({
     container: {
       alignItems: 'center',
@@ -31,8 +36,22 @@ export default function App() {
   });
 
   useEffect(() => {
-    const socket = io('http://192.168.0.130:3000');
+    socket = io('http://192.168.0.130:3000');
   }, []);
+
+  function sendMessage() {
+    const newMessage = {
+      text: message,
+      sended: true,
+      date: new Date()
+    };
+
+    messages.push(newMessage);
+
+    socket.emit('newMessage', newMessage.text);
+
+    setMessage('');
+  }
 
   return (
     <>
@@ -40,7 +59,10 @@ export default function App() {
         <Text style={styles.title}>TaxiApp</Text>
         <TextInput
           style={styles.textInput}
-          placeholder="Send a message" />
+          placeholder="Send a message"
+          value={message}
+          onChangeText={message => setMessage(message)}
+          onSubmitEditing={() => sendMessage()} />
       </View>
     </>
   );
